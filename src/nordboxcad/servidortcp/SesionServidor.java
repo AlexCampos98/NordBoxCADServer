@@ -13,8 +13,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import nordboxcad.EjercicioBenchUsuario;
 import nordboxcad.ExcepcionNordBox;
 import nordboxcad.NordBoxCAD;
 import nordboxcad.Usuario;
@@ -61,11 +63,29 @@ public class SesionServidor extends Thread
                     usuario = boxCAD.buscarUsuarioCorreo(datosSeparados[1]);
                     envio.writeObject(usuario);
                     break;
-                   
+
                 //Busqueda del usuario por el id.
                 case "2":
                     usuario = boxCAD.buscarUsuarioID(Integer.parseInt(datosSeparados[1]));
                     envio.writeObject(usuario);
+                    break;
+
+                //Verificacion del login
+                case "3":
+                    usuario = boxCAD.comprobarLogin(datosSeparados[1], datosSeparados[2]);
+                    envio.writeObject(usuario);
+                    break;
+                    
+                //Creacion de un ejercicio de benchmark.
+                case "4":
+                    boxCAD.crearEjeBench(Integer.parseInt(datosSeparados[1]), Integer.parseInt(datosSeparados[2]), Integer.parseInt(datosSeparados[3]));
+                    //TODO enviar algun verificador y añadirlo al CAD.
+                    break;
+                    
+                //Envio de datos de todos los ejercicios bench del usuario.
+                case "5":
+                    ArrayList<EjercicioBenchUsuario> arrayList = boxCAD.ejeBenchUsuario(Integer.parseInt(datosSeparados[1]), Integer.parseInt(datosSeparados[2]));
+                    envio.writeObject(arrayList);
                     break;
             }
 
