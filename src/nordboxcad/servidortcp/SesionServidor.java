@@ -42,6 +42,7 @@ public class SesionServidor extends Thread
         try
         {
             NordBoxCAD boxCAD = new NordBoxCAD();
+            Usuario usuario;
 
             InputStream inputStream = clienteConectado.getInputStream();
             DataInputStream recepcion = new DataInputStream(inputStream);
@@ -57,7 +58,13 @@ public class SesionServidor extends Thread
             {
                 //Busqueda del usuario por el correo.
                 case "1":
-                    Usuario usuario = boxCAD.buscarUsuarioCorreo(datosSeparados[1]);
+                    usuario = boxCAD.buscarUsuarioCorreo(datosSeparados[1]);
+                    envio.writeObject(usuario);
+                    break;
+                   
+                //Busqueda del usuario por el id.
+                case "2":
+                    usuario = boxCAD.buscarUsuarioID(Integer.parseInt(datosSeparados[1]));
                     envio.writeObject(usuario);
                     break;
             }
