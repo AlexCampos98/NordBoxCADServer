@@ -5,11 +5,13 @@
  */
 package nordboxcad;
 
+import java.io.Serializable;
+
 /**
  *
  * @author Alejandro Campos Maestre
  */
-public class EjerciciosBench
+public class EjerciciosBench implements Serializable
 {
     Integer id;
     String nombre;

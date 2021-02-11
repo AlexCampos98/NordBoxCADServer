@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import nordboxcad.EjercicioBenchUsuario;
+import nordboxcad.EjerciciosBench;
 import nordboxcad.ExcepcionNordBox;
 import nordboxcad.NordBoxCAD;
 import nordboxcad.Usuario;
@@ -44,58 +45,56 @@ public class SesionServidor extends Thread
         try
         {
             NordBoxCAD boxCAD = new NordBoxCAD();
-            Usuario usuario;
+            Usuario usuario, recepcionUsuario;
+            EjercicioBenchUsuario recepcionEjercicioBenchUsuario;
+            EjerciciosBench recepcionEjerciciosBench;
+            int varInt;
 
-            InputStream inputStream = clienteConectado.getInputStream();
-            DataInputStream recepcion = new DataInputStream(inputStream);
+            DataInputStream recepcionData = new DataInputStream(clienteConectado.getInputStream());
+            ObjectInputStream recepcionObject = new ObjectInputStream(clienteConectado.getInputStream());
 
-            ObjectOutputStream envio = new ObjectOutputStream(clienteConectado.getOutputStream());
+            ObjectOutputStream envioObject = new ObjectOutputStream(clienteConectado.getOutputStream());
+            DataOutputStream envioData = new DataOutputStream(clienteConectado.getOutputStream());
 
             //Capturo los datos que envie el cliente y los separo, para poder interactuar con ellos.
-            String capturaDatos = recepcion.readUTF();
-            String[] datosSeparados = capturaDatos.split("-");
+            String capturaDatos = recepcionData.readUTF();
 
-            //El primer caracter lo comparo para saber que funcion hara.
-            switch (datosSeparados[0])
+            switch (capturaDatos)
             {
-                //Busqueda del usuario por el correo.
-                case "1":
-                    usuario = boxCAD.buscarUsuarioCorreo(datosSeparados[1]);
-                    envio.writeObject(usuario);
+                case "comprobarLogin":
+                    System.out.println("Verificacion del login");
+                    recepcionUsuario = (Usuario) recepcionObject.readObject();
+                    usuario = boxCAD.comprobarLogin(recepcionUsuario.getCorreo(), recepcionUsuario.getPassword());
+                    envioObject.writeObject(usuario);
                     break;
 
-                //Busqueda del usuario por el id.
-                case "2":
-                    usuario = boxCAD.buscarUsuarioID(Integer.parseInt(datosSeparados[1]));
-                    envio.writeObject(usuario);
+                case "insertarEjerciciosBench":
+                    System.out.println("insertarEjerciciosBench");
+                    recepcionEjerciciosBench = (EjerciciosBench) recepcionObject.readObject();
+                    varInt = boxCAD.insertarEjerciciosBench(recepcionEjerciciosBench.getNombre(), recepcionEjerciciosBench.getDificultad());
+                    envioObject.writeObject(varInt);
                     break;
 
-                //Verificacion del login
-                case "3":
-                    usuario = boxCAD.comprobarLogin(datosSeparados[1], datosSeparados[2]);
-                    envio.writeObject(usuario);
-                    break;
-                    
-                //Creacion de un ejercicio de benchmark.
-                case "4":
-                    boxCAD.crearEjeBench(Integer.parseInt(datosSeparados[1]), Integer.parseInt(datosSeparados[2]), Integer.parseInt(datosSeparados[3]));
-                    //TODO enviar algun verificador y añadirlo al CAD.
-                    break;
-                    
-                //Envio de datos de todos los ejercicios bench del usuario.
-                case "5":
-                    ArrayList<EjercicioBenchUsuario> arrayList = boxCAD.ejeBenchUsuario(Integer.parseInt(datosSeparados[1]), Integer.parseInt(datosSeparados[2]));
-                    envio.writeObject(arrayList);
+                case "crearUsuario":
+                    System.out.println("crearUsuario");
+                    recepcionUsuario = (Usuario) recepcionObject.readObject();
+                    varInt = boxCAD.crearUsuario(recepcionUsuario);
+                    envioObject.writeObject(varInt);
                     break;
             }
 
-            envio.close();
-            recepcion.close();
+            System.out.println("Finalizacion del socket");
+
+            envioObject.close();
+            recepcionData.close();
 
         } catch (IOException ex)
         {
             System.out.println(ex.getMessage());
         } catch (ExcepcionNordBox ex)
+        {
+            Logger.getLogger(SesionServidor.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex)
         {
             Logger.getLogger(SesionServidor.class.getName()).log(Level.SEVERE, null, ex);
         }

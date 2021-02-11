@@ -27,6 +27,7 @@ import javax.crypto.spec.PBEKeySpec;
  */
 public class NordBoxCAD
 {
+
     Connection conexion;
     static String IP = null, usuarioBD = null, contraseñaBD = null;
 
@@ -85,6 +86,47 @@ public class NordBoxCAD
             e.setMensajeErrorUsuario("Error general del sistema. Consulte con el administrador.");
             throw e;
         }
+    }
+
+    public int crearUsuario(Usuario usuario) throws ExcepcionNordBox
+    {
+        conectar();
+        String dml = "INSERT INTO usuario (correo, password, nombre, pApellido, sApellido, telefono, telefonoEmergencia, codigoPostal, localidad, provincia) "
+                + "VALUES (?,?,?,?,?,?,?,?,?,?)";
+        int resultado = 0;
+        try
+        {
+            PreparedStatement preparedStatement = conexion.prepareStatement(dml);
+            preparedStatement.setString(1, usuario.getCorreo());
+
+            String passwordHash = generateStorngPasswordHash(usuario.getPassword());
+
+            preparedStatement.setString(2, passwordHash);
+            preparedStatement.setString(3, usuario.getNombre());
+            preparedStatement.setString(4, usuario.getpApellido());
+            preparedStatement.setString(5, usuario.getsApellido());
+            preparedStatement.setString(6, usuario.getTelefono());
+            preparedStatement.setString(7, usuario.getTelefonoEmergencia());
+            preparedStatement.setObject(8, usuario.getCodigoPostal(), Types.INTEGER);
+            preparedStatement.setString(9, usuario.getLocalidad());
+            preparedStatement.setString(10, usuario.getProvincia());
+
+            resultado = preparedStatement.executeUpdate();
+
+            preparedStatement.close();
+            conexion.close();
+        } catch (NoSuchAlgorithmException ex)
+        {
+            Logger.getLogger(NordBoxCAD.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InvalidKeySpecException ex)
+        {
+            Logger.getLogger(NordBoxCAD.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex)
+        {
+            Logger.getLogger(NordBoxCAD.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return resultado;
     }
 
     public int insertarEjerciciosBench(String nombre, Integer dificultad) throws ExcepcionNordBox
@@ -282,22 +324,22 @@ public class NordBoxCAD
             Logger.getLogger(NordBoxCAD.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     public ArrayList<EjercicioBenchUsuario> ejeBenchUsuario(Integer idUsuario, Integer idEjercicio) throws ExcepcionNordBox
     {
         conectar();
         String dql = "SELECT * FROM ejercicioBenchUsuario WHERE id_ejeBench=? AND id_usu=? ORDER BY fecha DESC";
         ArrayList<EjercicioBenchUsuario> arrayList = new ArrayList<>();
-        
+
         try
         {
             PreparedStatement preparedStatement = conexion.prepareStatement(dql);
             preparedStatement.setObject(1, idEjercicio, Types.INTEGER);
             preparedStatement.setObject(2, idUsuario, Types.INTEGER);
-            
+
             ResultSet resultSet = preparedStatement.executeQuery();
-            
-            while(resultSet.next())
+
+            while (resultSet.next())
             {
                 EjercicioBenchUsuario benchUsuario = new EjercicioBenchUsuario();
                 benchUsuario.setId(resultSet.getInt("id"));
@@ -305,7 +347,7 @@ public class NordBoxCAD
                 benchUsuario.setId_usu(resultSet.getInt("id_usu"));
                 benchUsuario.setFecha(resultSet.getDate("fecha"));
                 benchUsuario.setPeso(resultSet.getInt("peso"));
-                
+
                 arrayList.add(benchUsuario);
             }
         } catch (SQLException ex)

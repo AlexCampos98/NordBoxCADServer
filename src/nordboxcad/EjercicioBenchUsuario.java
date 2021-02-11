@@ -5,13 +5,14 @@
  */
 package nordboxcad;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  *
  * @author Alejandro Campos Maestre
  */
-public class EjercicioBenchUsuario
+public class EjercicioBenchUsuario implements Serializable
 {
     Integer id, id_ejeBench, id_usu;
     Date fecha;

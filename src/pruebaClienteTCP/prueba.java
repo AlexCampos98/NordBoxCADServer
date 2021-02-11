@@ -18,7 +18,7 @@ public class prueba
      */
     public static void main(String[] args)
     {
-        Thread cliente = new preubaTCP();
+        Thread cliente = new preubaTCP("2","1");
         cliente.start();
 //        String a = "algo-azucar";
 //        String[] b = a.split("-");

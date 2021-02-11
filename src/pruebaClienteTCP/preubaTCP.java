@@ -21,6 +21,14 @@ import nordboxcad.Usuario;
  */
 public class preubaTCP extends Thread
 {   
+    String opcion, parametro1;
+
+    public preubaTCP(String opcion, String parametro1)
+    {
+        this.opcion = opcion;
+        this.parametro1 = parametro1;
+    }
+    
     @Override
     public void run() {
         try {
@@ -30,7 +38,7 @@ public class preubaTCP extends Thread
             System.out.println("USU - conectado a socket");
             
             DataOutputStream envio = new DataOutputStream(socketCliente.getOutputStream());
-            envio.writeUTF("1-alex@hot.ca");
+            envio.writeUTF(opcion + "-" + parametro1);
 //            envio.writeUTF("alex@hot.ca");
             
             System.out.println("USU - enviado dos strings, a la espera de recepcion");
@@ -52,6 +60,26 @@ public class preubaTCP extends Thread
         {
             System.err.println("ClassNotFoundException");
         }
+    }
+
+    public String getOpcion()
+    {
+        return opcion;
+    }
+
+    public void setOpcion(String opcion)
+    {
+        this.opcion = opcion;
+    }
+
+    public String getParametro1()
+    {
+        return parametro1;
+    }
+
+    public void setParametro1(String parametro1)
+    {
+        this.parametro1 = parametro1;
     }
     
 }
