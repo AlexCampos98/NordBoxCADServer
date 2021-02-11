@@ -14,6 +14,7 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import nordboxcad.EjercicioBenchUsuario;
@@ -50,52 +51,73 @@ public class SesionServidor extends Thread
             EjerciciosBench recepcionEjerciciosBench;
             int varInt;
 
+            Date date = new Date();
+            
             DataInputStream recepcionData = new DataInputStream(clienteConectado.getInputStream());
-            ObjectInputStream recepcionObject = new ObjectInputStream(clienteConectado.getInputStream());
+            ObjectInputStream recepcionObject = null;
 
-            ObjectOutputStream envioObject = new ObjectOutputStream(clienteConectado.getOutputStream());
-            DataOutputStream envioData = new DataOutputStream(clienteConectado.getOutputStream());
+            ObjectOutputStream envioObject = null;
+            DataOutputStream envioData = null;
 
             System.out.println("Captura de dato");
-            
+
             //Capturo los datos que envie el cliente y los separo, para poder interactuar con ellos.
             String capturaDatos = recepcionData.readUTF();
-
+            
             switch (capturaDatos)
             {
                 case "comprobarLogin":
-                    System.out.println("Verificacion del login");
+                    recepcionObject = new ObjectInputStream(clienteConectado.getInputStream());
+                    envioObject = new ObjectOutputStream(clienteConectado.getOutputStream());
+                    System.out.println(date.toString()+" - Verificacion del login");
                     recepcionUsuario = (Usuario) recepcionObject.readObject();
                     usuario = boxCAD.comprobarLogin(recepcionUsuario.getCorreo(), recepcionUsuario.getPassword());
                     envioObject.writeObject(usuario);
                     break;
 
                 case "insertarEjerciciosBench":
-                    System.out.println("insertarEjerciciosBench");
+                    recepcionObject = new ObjectInputStream(clienteConectado.getInputStream());
+                    envioObject = new ObjectOutputStream(clienteConectado.getOutputStream());
+                    System.out.println(date.toString()+" - insertarEjerciciosBench");
                     recepcionEjerciciosBench = (EjerciciosBench) recepcionObject.readObject();
                     varInt = boxCAD.insertarEjerciciosBench(recepcionEjerciciosBench.getNombre(), recepcionEjerciciosBench.getDificultad());
                     envioObject.writeObject(varInt);
                     break;
 
                 case "crearUsuario":
-                    System.out.println("crearUsuario");
+                    recepcionObject = new ObjectInputStream(clienteConectado.getInputStream());
+                    envioObject = new ObjectOutputStream(clienteConectado.getOutputStream());
+                    System.out.println(date.toString()+" - crearUsuario");
                     recepcionUsuario = (Usuario) recepcionObject.readObject();
                     varInt = boxCAD.crearUsuario(recepcionUsuario);
                     envioObject.writeObject(varInt);
                     break;
 
                 case "ejeBench":
-                    System.out.println("ejeBench");
+                    envioObject = new ObjectOutputStream(clienteConectado.getOutputStream());
+                    System.out.println(date.toString()+" - ejeBench");
                     envioObject.writeObject(boxCAD.ejeBench());
                     break;
             }
 
             System.out.println("Finalizacion del socket");
 
-            envioData.close();
-            recepcionObject.close();
-            envioObject.close();
-            recepcionData.close();
+            if (envioData != null)
+            {
+                envioData.close();
+            }
+            if (recepcionObject != null)
+            {
+                recepcionObject.close();
+            }
+            if (envioObject != null)
+            {
+                envioObject.close();
+            }
+            if (recepcionData != null)
+            {
+                recepcionData.close();
+            }
 
         } catch (IOException ex)
         {
