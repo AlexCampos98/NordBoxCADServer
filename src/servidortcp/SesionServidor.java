@@ -56,6 +56,8 @@ public class SesionServidor extends Thread
             ObjectOutputStream envioObject = new ObjectOutputStream(clienteConectado.getOutputStream());
             DataOutputStream envioData = new DataOutputStream(clienteConectado.getOutputStream());
 
+            System.out.println("Captura de dato");
+            
             //Capturo los datos que envie el cliente y los separo, para poder interactuar con ellos.
             String capturaDatos = recepcionData.readUTF();
 
@@ -83,6 +85,7 @@ public class SesionServidor extends Thread
                     break;
 
                 case "ejeBench":
+                    System.out.println("ejeBench");
                     envioObject.writeObject(boxCAD.ejeBench());
                     break;
             }
