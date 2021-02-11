@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package nordboxcad.servidortcp;
+package servidortcp;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -81,10 +81,16 @@ public class SesionServidor extends Thread
                     varInt = boxCAD.crearUsuario(recepcionUsuario);
                     envioObject.writeObject(varInt);
                     break;
+
+                case "ejeBench":
+                    envioObject.writeObject(boxCAD.ejeBench());
+                    break;
             }
 
             System.out.println("Finalizacion del socket");
 
+            envioData.close();
+            recepcionObject.close();
             envioObject.close();
             recepcionData.close();
 

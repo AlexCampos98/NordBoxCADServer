@@ -14,6 +14,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -151,6 +152,36 @@ public class NordBoxCAD
         }
 
         return resultado;
+    }
+    
+    public ArrayList<EjerciciosBench> ejeBench() throws ExcepcionNordBox
+    {
+        conectar();
+        ArrayList<EjerciciosBench> arrayList = new ArrayList<>();
+        String dql = "SELECT * FROM ejerciciosbench";
+        
+        try
+        {
+            Statement statement = conexion.createStatement();
+            
+            ResultSet resultSet = statement.executeQuery(dql);
+            
+            while (resultSet.next())
+            {
+                EjerciciosBench bench = new EjerciciosBench();
+                bench.setId(resultSet.getInt("id"));
+                bench.setNombre(resultSet.getString("nombre"));
+                bench.setDificultad(resultSet.getInt("dificultad"));
+                bench.setParteCuerpo(resultSet.getInt("parteCuerpo"));
+                arrayList.add(bench);
+            }
+            
+        } catch (SQLException ex)
+        {
+            Logger.getLogger(NordBoxCAD.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return arrayList;
     }
 
     /**

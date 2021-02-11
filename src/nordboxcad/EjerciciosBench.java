@@ -15,17 +15,18 @@ public class EjerciciosBench implements Serializable
 {
     Integer id;
     String nombre;
-    Integer dificultad;
+    Integer dificultad, parteCuerpo;
 
     public EjerciciosBench()
     {
     }
 
-    public EjerciciosBench(Integer id, String nombre, Integer dificultad)
+    public EjerciciosBench(Integer id, String nombre, Integer dificultad, Integer parteCuerpo)
     {
         this.id = id;
         this.nombre = nombre;
         this.dificultad = dificultad;
+        this.parteCuerpo = parteCuerpo;
     }
 
     public Integer getId()
@@ -58,10 +59,19 @@ public class EjerciciosBench implements Serializable
         this.dificultad = dificultad;
     }
 
+    public Integer getParteCuerpo()
+    {
+        return parteCuerpo;
+    }
+
+    public void setParteCuerpo(Integer parteCuerpo)
+    {
+        this.parteCuerpo = parteCuerpo;
+    }
+
     @Override
     public String toString()
     {
-        return "EjerciciosBench{" + "id=" + id + ", nombre=" + nombre + ", dificultad=" + dificultad + '}';
+        return "EjerciciosBench{" + "id=" + id + ", nombre=" + nombre + ", dificultad=" + dificultad + ", parteCuerpo=" + parteCuerpo + '}';
     }
-    
 }
