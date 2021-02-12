@@ -153,19 +153,19 @@ public class NordBoxCAD
 
         return resultado;
     }
-    
+
     public ArrayList<EjerciciosBench> ejeBench() throws ExcepcionNordBox
     {
         conectar();
         ArrayList<EjerciciosBench> arrayList = new ArrayList<>();
         String dql = "SELECT * FROM ejerciciosbench";
-        
+
         try
         {
             Statement statement = conexion.createStatement();
-            
+
             ResultSet resultSet = statement.executeQuery(dql);
-            
+
             while (resultSet.next())
             {
                 EjerciciosBench bench = new EjerciciosBench();
@@ -175,12 +175,12 @@ public class NordBoxCAD
                 bench.setParteCuerpo(resultSet.getInt("parteCuerpo"));
                 arrayList.add(bench);
             }
-            
+
         } catch (SQLException ex)
         {
             Logger.getLogger(NordBoxCAD.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         return arrayList;
     }
 
@@ -197,7 +197,7 @@ public class NordBoxCAD
     public Usuario comprobarLogin(String correo, String password) throws ExcepcionNordBox
     {
         conectar();
-        String dql = "SELECT id, correo, password FROM usuario WHERE correo=?";
+        String dql = "SELECT * FROM usuario WHERE correo=?";
         Usuario usuario = new Usuario();
 
         try
@@ -214,6 +214,14 @@ public class NordBoxCAD
                     usuario.setPassword(resultSet.getString("password"));
                     usuario.setId(resultSet.getInt("id"));
                     usuario.setCorreo(resultSet.getString("correo"));
+                    usuario.setNombre(resultSet.getString("nombre"));
+                    usuario.setpApellido(resultSet.getString("pApellido"));
+                    usuario.setsApellido(resultSet.getString("sApellido"));
+                    usuario.setTelefono(resultSet.getString("telefono"));
+                    usuario.setTelefonoEmergencia(resultSet.getString("telefonoEmergencia"));
+                    usuario.setCodigoPostal(resultSet.getInt("codigoPostal"));
+                    usuario.setLocalidad(resultSet.getString("localidad"));
+                    usuario.setProvincia(resultSet.getString("provincia"));
                 } else
                 {
                     System.out.println("Contraseña o correo incorrecto");
