@@ -5,6 +5,11 @@
  */
 package nordboxcad;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -213,6 +218,15 @@ public class NordBoxCAD
                 {
                     usuario.setPassword(resultSet.getString("password"));
                     usuario.setId(resultSet.getInt("id"));
+
+                    if (resultSet.getString("img_perfil") == null)
+                    {
+                        usuario.setImg(null);
+                    } else
+                    {
+                        usuario.setImg(new File(resultSet.getString("img_perfil")));
+                    }
+
                     usuario.setCorreo(resultSet.getString("correo"));
                     usuario.setNombre(resultSet.getString("nombre"));
                     usuario.setpApellido(resultSet.getString("pApellido"));
@@ -258,6 +272,15 @@ public class NordBoxCAD
             if (resultSet.next())
             {
                 usuario.setId(resultSet.getInt("id"));
+
+                if (resultSet.getString("img_perfil") == null)
+                {
+                    usuario.setImg(null);
+                } else
+                {
+                    usuario.setImg(new File(resultSet.getString("img_perfil")));
+                }
+
                 usuario.setCorreo(resultSet.getString("correo"));
                 usuario.setPassword(resultSet.getString("password"));
                 usuario.setNombre(resultSet.getString("nombre"));
@@ -304,6 +327,15 @@ public class NordBoxCAD
             if (resultSet.next())
             {
                 usuario.setId(resultSet.getInt("id"));
+
+                if (resultSet.getString("img_perfil") == null)
+                {
+                    usuario.setImg(null);
+                } else
+                {
+                    usuario.setImg(new File(resultSet.getString("img_perfil")));
+                }
+
                 usuario.setCorreo(resultSet.getString("correo"));
                 usuario.setPassword(resultSet.getString("password"));
                 usuario.setNombre(resultSet.getString("nombre"));
@@ -332,6 +364,47 @@ public class NordBoxCAD
             Logger.getLogger(NordBoxCAD.class.getName()).log(Level.SEVERE, null, ex);
         }
         return usuario;
+    }
+
+    public int modificarUsuarioNoPass(Usuario usuario) throws ExcepcionNordBox
+    {
+        conectar();
+        String dml = "UPDATE usuario SET img_perfil=?, correo=?, nombre=?, pApellido=?, sApellido=?, telefono=?, telefonoEmergencia=?, "
+                + "codigoPostal=?, localidad=?, provincia=? WHERE id=?";
+        int resultado = 0;
+
+        try
+        {
+            PreparedStatement preparedStatement = conexion.prepareStatement(dml);
+
+            if (usuario.getImg() != null)
+            {
+                preparedStatement.setString(1, "imgPerfil/" + usuario.getId() + ".png");
+            } else
+            {
+                preparedStatement.setString(1, null);
+            }
+
+            preparedStatement.setString(2, usuario.getCorreo());
+            preparedStatement.setString(3, usuario.getNombre());
+            preparedStatement.setString(4, usuario.getpApellido());
+            preparedStatement.setString(5, usuario.getsApellido());
+            preparedStatement.setString(6, usuario.getTelefono());
+            preparedStatement.setString(7, usuario.getTelefonoEmergencia());
+            preparedStatement.setObject(8, usuario.getCodigoPostal(), Types.INTEGER);
+            preparedStatement.setString(9, usuario.getLocalidad());
+            preparedStatement.setString(10, usuario.getProvincia());
+            preparedStatement.setObject(11, usuario.getId(), Types.INTEGER);
+
+            resultado = preparedStatement.executeUpdate();
+
+            preparedStatement.close();
+            conexion.close();
+        } catch (SQLException ex)
+        {
+            System.err.println(ex);
+        }
+        return resultado;
     }
 
     /**

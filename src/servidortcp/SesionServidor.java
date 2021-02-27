@@ -7,6 +7,10 @@ package servidortcp;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -52,7 +56,7 @@ public class SesionServidor extends Thread
             int varInt;
 
             Date date = new Date();
-            
+
             DataInputStream recepcionData = new DataInputStream(clienteConectado.getInputStream());
             ObjectInputStream recepcionObject = null;
 
@@ -63,13 +67,14 @@ public class SesionServidor extends Thread
 
             //Capturo los datos que envie el cliente y los separo, para poder interactuar con ellos.
             String capturaDatos = recepcionData.readUTF();
-            
+
             switch (capturaDatos)
             {
                 case "comprobarLogin":
                     recepcionObject = new ObjectInputStream(clienteConectado.getInputStream());
                     envioObject = new ObjectOutputStream(clienteConectado.getOutputStream());
-                    System.out.println(date.toString()+" - Verificacion del login");
+                    
+                    System.out.println(date.toString() + " - Verificacion del login");
                     recepcionUsuario = (Usuario) recepcionObject.readObject();
                     usuario = boxCAD.comprobarLogin(recepcionUsuario.getCorreo(), recepcionUsuario.getPassword());
                     envioObject.writeObject(usuario);
@@ -78,7 +83,8 @@ public class SesionServidor extends Thread
                 case "insertarEjerciciosBench":
                     recepcionObject = new ObjectInputStream(clienteConectado.getInputStream());
                     envioObject = new ObjectOutputStream(clienteConectado.getOutputStream());
-                    System.out.println(date.toString()+" - insertarEjerciciosBench");
+                    
+                    System.out.println(date.toString() + " - insertarEjerciciosBench");
                     recepcionEjerciciosBench = (EjerciciosBench) recepcionObject.readObject();
                     varInt = boxCAD.insertarEjerciciosBench(recepcionEjerciciosBench.getNombre(), recepcionEjerciciosBench.getDificultad());
                     envioObject.writeObject(varInt);
@@ -87,7 +93,8 @@ public class SesionServidor extends Thread
                 case "crearUsuario":
                     recepcionObject = new ObjectInputStream(clienteConectado.getInputStream());
                     envioObject = new ObjectOutputStream(clienteConectado.getOutputStream());
-                    System.out.println(date.toString()+" - crearUsuario");
+                    
+                    System.out.println(date.toString() + " - crearUsuario");
                     recepcionUsuario = (Usuario) recepcionObject.readObject();
                     varInt = boxCAD.crearUsuario(recepcionUsuario);
                     envioObject.writeObject(varInt);
@@ -95,8 +102,25 @@ public class SesionServidor extends Thread
 
                 case "ejeBench":
                     envioObject = new ObjectOutputStream(clienteConectado.getOutputStream());
-                    System.out.println(date.toString()+" - ejeBench");
+                    
+                    System.out.println(date.toString() + " - ejeBench");
                     envioObject.writeObject(boxCAD.ejeBench());
+                    break;
+
+                case "modificarUsuarioNoPass":
+                    recepcionObject = new ObjectInputStream(clienteConectado.getInputStream());
+                    envioObject = new ObjectOutputStream(clienteConectado.getOutputStream());
+                    
+                    System.out.println(date.toString() + " - modificarUsuarioNoPass");
+                    recepcionUsuario = (Usuario) recepcionObject.readObject();
+                    varInt = boxCAD.modificarUsuarioNoPass(recepcionUsuario);
+
+                    if (varInt > 0 && recepcionUsuario.getImg() != null)
+                    {
+                        guardarImgPerfil(recepcionUsuario.getImg(), new File("imgPerfil/" + recepcionUsuario.getImg().getName()));
+                    }
+                    envioObject.writeObject(varInt);
+
                     break;
             }
 
@@ -128,6 +152,50 @@ public class SesionServidor extends Thread
         } catch (ClassNotFoundException ex)
         {
             Logger.getLogger(SesionServidor.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public static void guardarImgPerfil(File original, File copia)
+    {
+        FileInputStream archivoOriginal = null;
+        FileOutputStream archivoCopia = null;
+        if ((original != null) && (copia != null))
+        {
+            try
+            {
+                copia.createNewFile();
+                archivoOriginal = new FileInputStream(original);
+                archivoCopia = new FileOutputStream(copia);
+                //lectura por segmentos de 0.5MB
+                byte buffer[] = new byte[512 * 1024];
+                int nbLectura;
+                while ((nbLectura = archivoOriginal.read(buffer)) != -1)
+                {
+                    archivoCopia.write(buffer, 0, nbLectura);
+                }
+            } catch (FileNotFoundException fnf)
+            {
+                System.out.println(fnf);
+            } catch (IOException io)
+            {
+                System.out.println(io);
+            } finally
+            {
+                try
+                {
+                    archivoOriginal.close();
+                } catch (Exception e)
+                {
+                    System.out.println(e);
+                }
+                try
+                {
+                    archivoCopia.close();
+                } catch (Exception e)
+                {
+                    System.out.println(e);
+                }
+            }
         }
     }
 }

@@ -5,6 +5,7 @@
  */
 package nordboxcad;
 
+import java.io.File;
 import java.io.Serializable;
 
 /**
@@ -17,6 +18,7 @@ public class Usuario implements Serializable
     String correo, password, nombre, pApellido, sApellido, telefono, telefonoEmergencia;
     Integer codigoPostal;
     String localidad, provincia;
+    File img;
 
     public Usuario()
     {
@@ -29,7 +31,7 @@ public class Usuario implements Serializable
         this.password = password;
     }
 
-    public Usuario(Integer id, String correo, String password, String nombre, String pApellido, String sApellido, String telefono, String telefonoEmergencia, Integer codigoPostal, String localidad, String provincia)
+    public Usuario(Integer id, String correo, String password, String nombre, String pApellido, String sApellido, String telefono, String telefonoEmergencia, Integer codigoPostal, String localidad, String provincia, File img)
     {
         this.id = id;
         this.correo = correo;
@@ -42,6 +44,7 @@ public class Usuario implements Serializable
         this.codigoPostal = codigoPostal;
         this.localidad = localidad;
         this.provincia = provincia;
+        this.img = img;
     }
 
     public Integer getId()
@@ -152,6 +155,16 @@ public class Usuario implements Serializable
     public void setProvincia(String provincia)
     {
         this.provincia = provincia;
+    }
+
+    public File getImg()
+    {
+        return img;
+    }
+
+    public void setImg(File img)
+    {
+        this.img = img;
     }
 
     @Override
