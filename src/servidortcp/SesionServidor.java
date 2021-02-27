@@ -73,7 +73,7 @@ public class SesionServidor extends Thread
                 case "comprobarLogin":
                     recepcionObject = new ObjectInputStream(clienteConectado.getInputStream());
                     envioObject = new ObjectOutputStream(clienteConectado.getOutputStream());
-                    
+
                     System.out.println(date.toString() + " - Verificacion del login");
                     recepcionUsuario = (Usuario) recepcionObject.readObject();
                     usuario = boxCAD.comprobarLogin(recepcionUsuario.getCorreo(), recepcionUsuario.getPassword());
@@ -83,7 +83,7 @@ public class SesionServidor extends Thread
                 case "insertarEjerciciosBench":
                     recepcionObject = new ObjectInputStream(clienteConectado.getInputStream());
                     envioObject = new ObjectOutputStream(clienteConectado.getOutputStream());
-                    
+
                     System.out.println(date.toString() + " - insertarEjerciciosBench");
                     recepcionEjerciciosBench = (EjerciciosBench) recepcionObject.readObject();
                     varInt = boxCAD.insertarEjerciciosBench(recepcionEjerciciosBench.getNombre(), recepcionEjerciciosBench.getDificultad());
@@ -93,7 +93,7 @@ public class SesionServidor extends Thread
                 case "crearUsuario":
                     recepcionObject = new ObjectInputStream(clienteConectado.getInputStream());
                     envioObject = new ObjectOutputStream(clienteConectado.getOutputStream());
-                    
+
                     System.out.println(date.toString() + " - crearUsuario");
                     recepcionUsuario = (Usuario) recepcionObject.readObject();
                     varInt = boxCAD.crearUsuario(recepcionUsuario);
@@ -102,7 +102,7 @@ public class SesionServidor extends Thread
 
                 case "ejeBench":
                     envioObject = new ObjectOutputStream(clienteConectado.getOutputStream());
-                    
+
                     System.out.println(date.toString() + " - ejeBench");
                     envioObject.writeObject(boxCAD.ejeBench());
                     break;
@@ -110,14 +110,17 @@ public class SesionServidor extends Thread
                 case "modificarUsuarioNoPass":
                     recepcionObject = new ObjectInputStream(clienteConectado.getInputStream());
                     envioObject = new ObjectOutputStream(clienteConectado.getOutputStream());
-                    
+
                     System.out.println(date.toString() + " - modificarUsuarioNoPass");
                     recepcionUsuario = (Usuario) recepcionObject.readObject();
                     varInt = boxCAD.modificarUsuarioNoPass(recepcionUsuario);
 
+                    File renombrar = new File("imgPerfil/" + recepcionUsuario.getId() + ".png");
+//                    System.out.println(renombrar.getName());
+
                     if (varInt > 0 && recepcionUsuario.getImg() != null)
                     {
-                        guardarImgPerfil(recepcionUsuario.getImg(), new File("imgPerfil/" + recepcionUsuario.getImg().getName()));
+                        guardarImgPerfil(recepcionUsuario.getImg(), renombrar);
                     }
                     envioObject.writeObject(varInt);
 
