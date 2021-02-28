@@ -31,7 +31,8 @@ public class Usuario implements Serializable
         this.password = password;
     }
 
-    public Usuario(Integer id, String correo, String password, String nombre, String pApellido, String sApellido, String telefono, String telefonoEmergencia, Integer codigoPostal, String localidad, String provincia, File img)
+    public Usuario(Integer id, String correo, String password, String nombre, String pApellido, String sApellido, String telefono, String telefonoEmergencia, 
+            Integer codigoPostal, String localidad, String provincia, File img)
     {
         this.id = id;
         this.correo = correo;

@@ -5,6 +5,8 @@
  */
 package servidortcp;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -17,6 +19,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.logging.Level;
@@ -114,14 +117,16 @@ public class SesionServidor extends Thread
                     System.out.println(date.toString() + " - modificarUsuarioNoPass");
                     recepcionUsuario = (Usuario) recepcionObject.readObject();
                     varInt = boxCAD.modificarUsuarioNoPass(recepcionUsuario);
-
-                    File renombrar = new File("imgPerfil/" + recepcionUsuario.getId() + ".png");
+                    System.out.println("Antes de capturar");
+                    capturarArchivo(recepcionUsuario);
+                    System.out.println("Recibida la imagen");
+//                    File renombrar = new File("imgPerfil/" + recepcionUsuario.getId() + ".png");
 //                    System.out.println(renombrar.getName());
 
-                    if (varInt > 0 && recepcionUsuario.getImg() != null)
-                    {
-                        guardarImgPerfil(recepcionUsuario.getImg(), renombrar);
-                    }
+//                    if (varInt > 0 && recepcionUsuario.getImg() != null)
+//                    {
+//                        guardarImgPerfil(recepcionUsuario.getImg(), renombrar);
+//                    }
                     envioObject.writeObject(varInt);
 
                     break;
@@ -158,47 +163,82 @@ public class SesionServidor extends Thread
         }
     }
 
-    public static void guardarImgPerfil(File original, File copia)
+//    private static void guardarImgPerfil(File original, File copia)
+//    {
+//        FileInputStream archivoOriginal = null;
+//        FileOutputStream archivoCopia = null;
+//        if ((original != null) && (copia != null))
+//        {
+//            try
+//            {
+//                copia.createNewFile();
+//                archivoOriginal = new FileInputStream(original);
+//                archivoCopia = new FileOutputStream(copia);
+//                //lectura por segmentos de 0.5MB
+//                byte buffer[] = new byte[512 * 1024];
+//                int nbLectura;
+//                while ((nbLectura = archivoOriginal.read(buffer)) != -1)
+//                {
+//                    archivoCopia.write(buffer, 0, nbLectura);
+//                }
+//            } catch (FileNotFoundException fnf)
+//            {
+//                System.out.println(fnf);
+//            } catch (IOException io)
+//            {
+//                System.out.println(io);
+//            } finally
+//            {
+//                try
+//                {
+//                    archivoOriginal.close();
+//                } catch (Exception e)
+//                {
+//                    System.out.println(e);
+//                }
+//                try
+//                {
+//                    archivoCopia.close();
+//                } catch (Exception e)
+//                {
+//                    System.out.println(e);
+//                }
+//            }
+//        }
+//    }
+
+    private int capturarArchivo(Usuario usuario)
     {
-        FileInputStream archivoOriginal = null;
-        FileOutputStream archivoCopia = null;
-        if ((original != null) && (copia != null))
+        System.out.println("Dentro de capturar");
+        BufferedInputStream bis;
+        BufferedOutputStream bos;
+
+        byte[] receivedData;
+        int in;
+
+        try
         {
-            try
+            //Buffer de 1024 bytes
+            receivedData = new byte[1024];
+            bis = new BufferedInputStream(clienteConectado.getInputStream());
+
+            //Para guardar fichero recibido
+            bos = new BufferedOutputStream(new FileOutputStream("imgPerfil/" + usuario.getId() + ".png"));
+            System.out.println("Empieze del while");
+            while ((in = bis.read(receivedData)) > 1023)
             {
-                copia.createNewFile();
-                archivoOriginal = new FileInputStream(original);
-                archivoCopia = new FileOutputStream(copia);
-                //lectura por segmentos de 0.5MB
-                byte buffer[] = new byte[512 * 1024];
-                int nbLectura;
-                while ((nbLectura = archivoOriginal.read(buffer)) != -1)
-                {
-                    archivoCopia.write(buffer, 0, nbLectura);
-                }
-            } catch (FileNotFoundException fnf)
-            {
-                System.out.println(fnf);
-            } catch (IOException io)
-            {
-                System.out.println(io);
-            } finally
-            {
-                try
-                {
-                    archivoOriginal.close();
-                } catch (Exception e)
-                {
-                    System.out.println(e);
-                }
-                try
-                {
-                    archivoCopia.close();
-                } catch (Exception e)
-                {
-                    System.out.println(e);
-                }
+                System.out.println(in);
+                bos.write(receivedData, 0, in);
+                bos.flush();
+                System.out.println("Recibo bits");
             }
+            System.out.println("Termina recpcion");
+            return 1;
+
+        } catch (Exception e)
+        {
+            System.err.println(e);
+            return 0;
         }
     }
 }
