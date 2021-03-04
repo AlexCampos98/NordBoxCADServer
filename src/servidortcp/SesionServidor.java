@@ -81,6 +81,8 @@ public class SesionServidor extends Thread
                     recepcionUsuario = (Usuario) recepcionObject.readObject();
                     usuario = boxCAD.comprobarLogin(recepcionUsuario.getCorreo(), recepcionUsuario.getPassword());
                     envioObject.writeObject(usuario);
+                    
+//                    enviarArchivo(usuario);
                     break;
 
                 case "insertarEjerciciosBench":
@@ -174,7 +176,7 @@ public class SesionServidor extends Thread
             bis = new BufferedInputStream(clienteConectado.getInputStream());
 
             //Para guardar fichero recibido
-            bos = new BufferedOutputStream(new FileOutputStream("imgPerfil/" + usuario.getId() + ".jpg"));
+            bos = new BufferedOutputStream(new FileOutputStream("C:/xampp/htdocs/imgPerfil/" + usuario.getId() + ".jpg"));
             System.out.println("Empieze del while");
             while ((in = bis.read(receivedData)) > 1023)
             {
@@ -192,4 +194,35 @@ public class SesionServidor extends Thread
             return 0;
         }
     }
+    
+//    private void enviarArchivo(Usuario usuario)
+//    {        
+//        BufferedInputStream bis;
+//        BufferedOutputStream bos;
+//        int in;
+//        byte[] byteArray;
+//        //Fichero a transferir
+//        final String filename = usuario.getImg().getAbsolutePath(); 
+//        
+//        try
+//        {
+//            final File localFile = new File(filename);
+//            
+//            bis = new BufferedInputStream(new FileInputStream(localFile));
+//            bos = new BufferedOutputStream(clienteConectado.getOutputStream());
+//            
+//            //Enviamos el fichero
+//            byteArray = new byte[8192];
+//            while ((in = bis.read(byteArray)) > 0)
+//            {
+//                bos.write(byteArray, 0, in);
+//                bos.flush();
+//            }
+//            System.out.println("Salida de enviar foto");
+//
+//        } catch (Exception e)
+//        {
+//            System.out.println(e);
+//        }
+//    }
 }

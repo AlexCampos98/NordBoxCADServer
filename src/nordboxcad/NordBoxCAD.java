@@ -224,7 +224,7 @@ public class NordBoxCAD
                         usuario.setImg(null);
                     } else
                     {
-                        usuario.setImg(new File(resultSet.getString("img_perfil")));
+                        usuario.setImg(resultSet.getString("img_perfil"));
                     }
 
                     usuario.setCorreo(resultSet.getString("correo"));
@@ -278,7 +278,7 @@ public class NordBoxCAD
                     usuario.setImg(null);
                 } else
                 {
-                    usuario.setImg(new File(resultSet.getString("img_perfil")));
+                    usuario.setImg(resultSet.getString("img_perfil"));
                 }
 
                 usuario.setCorreo(resultSet.getString("correo"));
@@ -333,7 +333,7 @@ public class NordBoxCAD
                     usuario.setImg(null);
                 } else
                 {
-                    usuario.setImg(new File(resultSet.getString("img_perfil")));
+                    usuario.setImg(resultSet.getString("img_perfil"));
                 }
 
                 usuario.setCorreo(resultSet.getString("correo"));
@@ -379,7 +379,7 @@ public class NordBoxCAD
 
             if (usuario.getImg() != null)
             {
-                preparedStatement.setString(1, "imgPerfil/" + usuario.getId() + ".png");
+                preparedStatement.setString(1, usuario.getId() + ".jpg");
             } else
             {
                 preparedStatement.setString(1, null);
