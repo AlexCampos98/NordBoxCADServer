@@ -127,6 +127,22 @@ public class SesionServidor extends Thread
                     envioObject.writeObject(varInt);
 
                     break;
+                    
+                case "modificarUsuarioPass":
+                    recepcionObject = new ObjectInputStream(clienteConectado.getInputStream());
+                    envioObject = new ObjectOutputStream(clienteConectado.getOutputStream());
+
+                    System.out.println(date.toString() + " - modificarUsuarioPass");
+                    recepcionUsuario = (Usuario) recepcionObject.readObject();
+                    varInt = boxCAD.modificarUsuarioPass(recepcionUsuario);
+                    System.out.println("Antes de capturar");
+                    if(recepcionUsuario.getImg() != null)
+                        capturarArchivo(recepcionUsuario);
+                    System.out.println("Recibida la imagen");
+
+                    envioObject.writeObject(varInt);
+
+                    break;
             }
 
             System.out.println("Finalizacion del socket");
@@ -177,15 +193,12 @@ public class SesionServidor extends Thread
 
             //Para guardar fichero recibido
             bos = new BufferedOutputStream(new FileOutputStream("C:/xampp/htdocs/imgPerfil/" + usuario.getId() + ".jpg"));
-            System.out.println("Empieze del while");
             while ((in = bis.read(receivedData)) > 1023)
             {
-                System.out.println(in);
                 bos.write(receivedData, 0, in);
                 bos.flush();
-                System.out.println("Recibo bits");
             }
-            System.out.println("Termina recpcion");
+            System.out.println("Termina recpcion imagen");
             return 1;
 
         } catch (Exception e)

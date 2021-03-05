@@ -377,13 +377,7 @@ public class NordBoxCAD
         {
             PreparedStatement preparedStatement = conexion.prepareStatement(dml);
 
-            if (usuario.getImg() != null)
-            {
-                preparedStatement.setString(1, usuario.getId() + ".jpg");
-            } else
-            {
-                preparedStatement.setString(1, null);
-            }
+            preparedStatement.setString(1, usuario.getId() + ".jpg");
 
             preparedStatement.setString(2, usuario.getCorreo());
             preparedStatement.setString(3, usuario.getNombre());
@@ -403,6 +397,50 @@ public class NordBoxCAD
         } catch (SQLException ex)
         {
             System.err.println(ex);
+        }
+        return resultado;
+    }
+
+    public int modificarUsuarioPass(Usuario usuario) throws ExcepcionNordBox
+    {
+        conectar();
+        String dml = "UPDATE usuario SET img_perfil=?, correo=?, nombre=?, pApellido=?, sApellido=?, telefono=?, telefonoEmergencia=?, "
+                + "codigoPostal=?, localidad=?, provincia=?, password=? WHERE id=?";
+        int resultado = 0;
+
+        try
+        {
+            PreparedStatement preparedStatement = conexion.prepareStatement(dml);
+
+            preparedStatement.setString(1, usuario.getId() + ".jpg");
+
+            String passwordHash = generateStorngPasswordHash(usuario.getPassword());
+
+            preparedStatement.setString(2, usuario.getCorreo());
+            preparedStatement.setString(3, usuario.getNombre());
+            preparedStatement.setString(4, usuario.getpApellido());
+            preparedStatement.setString(5, usuario.getsApellido());
+            preparedStatement.setString(6, usuario.getTelefono());
+            preparedStatement.setString(7, usuario.getTelefonoEmergencia());
+            preparedStatement.setObject(8, usuario.getCodigoPostal(), Types.INTEGER);
+            preparedStatement.setString(9, usuario.getLocalidad());
+            preparedStatement.setString(10, usuario.getProvincia());
+            preparedStatement.setString(11, passwordHash);
+            preparedStatement.setObject(12, usuario.getId(), Types.INTEGER);
+
+            resultado = preparedStatement.executeUpdate();
+
+            preparedStatement.close();
+            conexion.close();
+        } catch (SQLException ex)
+        {
+            System.err.println(ex);
+        } catch (NoSuchAlgorithmException ex)
+        {
+            Logger.getLogger(NordBoxCAD.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InvalidKeySpecException ex)
+        {
+            Logger.getLogger(NordBoxCAD.class.getName()).log(Level.SEVERE, null, ex);
         }
         return resultado;
     }
