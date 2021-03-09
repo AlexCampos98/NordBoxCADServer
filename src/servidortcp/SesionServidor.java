@@ -82,7 +82,6 @@ public class SesionServidor extends Thread
                     usuario = boxCAD.comprobarLogin(recepcionUsuario.getCorreo(), recepcionUsuario.getPassword());
                     envioObject.writeObject(usuario);
                     
-//                    enviarArchivo(usuario);
                     break;
 
                 case "insertarEjerciciosBench":
@@ -142,6 +141,17 @@ public class SesionServidor extends Thread
 
                     envioObject.writeObject(varInt);
 
+                    break;
+                
+                case "buscarUsuarioID":
+                    recepcionObject = new ObjectInputStream(clienteConectado.getInputStream());
+                    envioObject = new ObjectOutputStream(clienteConectado.getOutputStream());
+
+                    System.out.println(date.toString() + " - buscarUsuarioID");
+                    recepcionUsuario = (Usuario) recepcionObject.readObject();
+                    usuario = boxCAD.buscarUsuarioID(recepcionUsuario.getId());
+                    envioObject.writeObject(usuario);
+                    
                     break;
             }
 
