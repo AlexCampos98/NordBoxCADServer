@@ -138,7 +138,7 @@ public class NordBoxCAD
     public int insertarEjerciciosBench(String nombre, Integer dificultad) throws ExcepcionNordBox
     {
         conectar();
-        String dml = "INSERT INTO ejerciciosBench (nombre, dificultad) VALUES (?,?)";
+        String dml = "INSERT INTO ejercicio_bench (nombre, dificultad) VALUES (?,?)";
         int resultado = 0;
 
         try
@@ -163,7 +163,7 @@ public class NordBoxCAD
     {
         conectar();
         ArrayList<EjerciciosBench> arrayList = new ArrayList<>();
-        String dql = "SELECT * FROM ejerciciosbench";
+        String dql = "SELECT * FROM ejercicio_bench";
 
         try
         {
@@ -174,10 +174,10 @@ public class NordBoxCAD
             while (resultSet.next())
             {
                 EjerciciosBench bench = new EjerciciosBench();
-                bench.setId(resultSet.getInt("id"));
+                bench.setId(resultSet.getInt("id_ejercicio_bench"));
                 bench.setNombre(resultSet.getString("nombre"));
                 bench.setDificultad(resultSet.getInt("dificultad"));
-                bench.setParteCuerpo(resultSet.getInt("parteCuerpo"));
+                bench.setParteCuerpo(resultSet.getInt("parte_cuerpo"));
                 arrayList.add(bench);
             }
 
@@ -217,7 +217,7 @@ public class NordBoxCAD
                 if (validatePassword(password, resultSet.getString("password")))
                 {
                     usuario.setPassword(resultSet.getString("password"));
-                    usuario.setId(resultSet.getInt("id"));
+                    usuario.setId(resultSet.getInt("id_usuario"));
 
                     if (resultSet.getString("img_perfil") == null)
                     {
@@ -259,7 +259,7 @@ public class NordBoxCAD
     public Usuario buscarUsuarioID(Integer id) throws ExcepcionNordBox
     {
         conectar();
-        String dql = "SELECT * FROM usuario WHERE id=?";
+        String dql = "SELECT * FROM usuario WHERE id_usuario=?";
         Usuario usuario = new Usuario();
 
         try
@@ -271,7 +271,7 @@ public class NordBoxCAD
 
             if (resultSet.next())
             {
-                usuario.setId(resultSet.getInt("id"));
+                usuario.setId(resultSet.getInt("id_usuario"));
 
                 if (resultSet.getString("img_perfil") == null)
                 {
@@ -326,7 +326,7 @@ public class NordBoxCAD
 
             if (resultSet.next())
             {
-                usuario.setId(resultSet.getInt("id"));
+                usuario.setId(resultSet.getInt("id_usuario"));
 
                 if (resultSet.getString("img_perfil") == null)
                 {
@@ -370,7 +370,7 @@ public class NordBoxCAD
     {
         conectar();
         String dml = "UPDATE usuario SET img_perfil=?, correo=?, nombre=?, pApellido=?, sApellido=?, telefono=?, telefonoEmergencia=?, "
-                + "codigoPostal=?, localidad=?, provincia=? WHERE id=?";
+                + "codigoPostal=?, localidad=?, provincia=? WHERE id_usuario=?";
         int resultado = 0;
 
         try
@@ -405,7 +405,7 @@ public class NordBoxCAD
     {
         conectar();
         String dml = "UPDATE usuario SET img_perfil=?, correo=?, nombre=?, pApellido=?, sApellido=?, telefono=?, telefonoEmergencia=?, "
-                + "codigoPostal=?, localidad=?, provincia=?, password=? WHERE id=?";
+                + "codigoPostal=?, localidad=?, provincia=?, password=? WHERE id_usuario=?";
         int resultado = 0;
 
         try
@@ -456,7 +456,7 @@ public class NordBoxCAD
     public void crearEjeBench(Integer idUsuario, Integer idEjercicio, Integer peso) throws ExcepcionNordBox
     {
         conectar();
-        String dml = "INSERT INTO ejercicioBenchUsuario (id_ejeBench, id_usu, fecha, peso) VALUES (?,?,SYSDATE(),?)";
+        String dml = "INSERT INTO apunto_ejercicio (id_ejercicio_bench, id_usuario, fecha, peso) VALUES (?,?,SYSDATE(),?)";
 
         try
         {
@@ -478,7 +478,7 @@ public class NordBoxCAD
     public ArrayList<EjercicioBenchUsuario> ejeBenchUsuario(Integer idUsuario, Integer idEjercicio) throws ExcepcionNordBox
     {
         conectar();
-        String dql = "SELECT * FROM ejercicioBenchUsuario WHERE id_ejeBench=? AND id_usu=? ORDER BY fecha DESC";
+        String dql = "SELECT * FROM apunto_ejercicio WHERE id_ejercicio_bench=? AND id_usuario=? ORDER BY fecha DESC";
         ArrayList<EjercicioBenchUsuario> arrayList = new ArrayList<>();
 
         try
@@ -492,9 +492,9 @@ public class NordBoxCAD
             while (resultSet.next())
             {
                 EjercicioBenchUsuario benchUsuario = new EjercicioBenchUsuario();
-                benchUsuario.setId(resultSet.getInt("id"));
-                benchUsuario.setId_ejeBench(resultSet.getInt("id_ejeBench"));
-                benchUsuario.setId_usu(resultSet.getInt("id_usu"));
+                benchUsuario.setId(resultSet.getInt("id_apunte"));
+                benchUsuario.setId_ejeBench(resultSet.getInt("id_ejercicio_bench"));
+                benchUsuario.setId_usu(resultSet.getInt("id_usuario"));
                 benchUsuario.setFecha(resultSet.getDate("fecha"));
                 benchUsuario.setPeso(resultSet.getInt("peso"));
 
