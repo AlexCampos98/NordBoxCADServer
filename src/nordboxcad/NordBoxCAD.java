@@ -202,45 +202,62 @@ public class NordBoxCAD
     public Usuario comprobarLogin(String correo, String password) throws ExcepcionNordBox
     {
         conectar();
+        String dqlNuevoUser = "SELECT * FROM crear_usuario WHERE email=?";
         String dql = "SELECT * FROM usuario WHERE correo=?";
         Usuario usuario = new Usuario();
 
         try
         {
+            PreparedStatement preparedStatementNuevoUser = conexion.prepareStatement(dqlNuevoUser);
+            preparedStatementNuevoUser.setString(1, correo);
+            ResultSet resultSetNuevoUser = preparedStatementNuevoUser.executeQuery();
+
             PreparedStatement preparedStatement = conexion.prepareStatement(dql);
             preparedStatement.setString(1, correo);
 
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            if (resultSet.next())
+            if (resultSetNuevoUser.next())
             {
-                if (validatePassword(password, resultSet.getString("password")))
-                {
-                    usuario.setPassword(resultSet.getString("password"));
-                    usuario.setId(resultSet.getInt("id_usuario"));
-
-                    if (resultSet.getString("img_perfil") == null)
+                if (validatePassword(password, resultSetNuevoUser.getString("password")))
                     {
-                        usuario.setImg(null);
+                        usuario.setCorreo(resultSetNuevoUser.getString("correo"));
+                        usuario.setId(0);
                     } else
                     {
-                        usuario.setImg(resultSet.getString("img_perfil"));
+                        System.out.println("Contraseña o correo incorrecto");
                     }
+            } else
+            {
+                ResultSet resultSet = preparedStatement.executeQuery();
 
-                    usuario.setCorreo(resultSet.getString("correo"));
-                    usuario.setNombre(resultSet.getString("nombre"));
-                    usuario.setpApellido(resultSet.getString("pApellido"));
-                    usuario.setsApellido(resultSet.getString("sApellido"));
-                    usuario.setTelefono(resultSet.getString("telefono"));
-                    usuario.setTelefonoEmergencia(resultSet.getString("telefonoEmergencia"));
-                    usuario.setCodigoPostal(resultSet.getInt("codigoPostal"));
-                    usuario.setLocalidad(resultSet.getString("localidad"));
-                    usuario.setProvincia(resultSet.getString("provincia"));
-                } else
+                if (resultSet.next())
                 {
-                    System.out.println("Contraseña o correo incorrecto");
-                }
+                    if (validatePassword(password, resultSet.getString("password")))
+                    {
+                        usuario.setPassword(resultSet.getString("password"));
+                        usuario.setId(resultSet.getInt("id_usuario"));
 
+                        if (resultSet.getString("img_perfil") == null)
+                        {
+                            usuario.setImg(null);
+                        } else
+                        {
+                            usuario.setImg(resultSet.getString("img_perfil"));
+                        }
+
+                        usuario.setCorreo(resultSet.getString("correo"));
+                        usuario.setNombre(resultSet.getString("nombre"));
+                        usuario.setpApellido(resultSet.getString("pApellido"));
+                        usuario.setsApellido(resultSet.getString("sApellido"));
+                        usuario.setTelefono(resultSet.getString("telefono"));
+                        usuario.setTelefonoEmergencia(resultSet.getString("telefonoEmergencia"));
+                        usuario.setCodigoPostal(resultSet.getInt("codigoPostal"));
+                        usuario.setLocalidad(resultSet.getString("localidad"));
+                        usuario.setProvincia(resultSet.getString("provincia"));
+                    } else
+                    {
+                        System.out.println("Contraseña o correo incorrecto");
+                    }
+                }
             }
         } catch (SQLException ex)
         {
