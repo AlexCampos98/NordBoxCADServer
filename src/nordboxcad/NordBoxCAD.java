@@ -22,10 +22,22 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
+import java.util.Properties;
+import javax.mail.Authenticator;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 
 /**
  *
@@ -97,25 +109,42 @@ public class NordBoxCAD
     public int crearUsuario(Usuario usuario) throws ExcepcionNordBox
     {
         conectar();
-        String dml = "INSERT INTO usuario (correo, password, nombre, pApellido, sApellido, telefono, telefonoEmergencia, codigoPostal, localidad, provincia) "
-                + "VALUES (?,?,?,?,?,?,?,?,?,?)";
+        String dml = "INSERT INTO crear_usuario (email, password, fecha, id_administrador, isregistrado) "
+                + "VALUES (?,?,?,3,0)";
         int resultado = 0;
         try
         {
             PreparedStatement preparedStatement = conexion.prepareStatement(dml);
             preparedStatement.setString(1, usuario.getCorreo());
+            
+            // Los caracteres de interés en un array de char.
+            char [] chars = "0123456789abcdefghijklmnopqrstuvwxyz".toCharArray();
 
-            String passwordHash = generateStorngPasswordHash(usuario.getPassword());
+            // Longitud del array de char.
+            int charsLength = chars.length;
+
+            // Instanciamos la clase Random
+            Random random = new Random();
+
+            // Un StringBuffer para componer la cadena aleatoria de forma eficiente
+            StringBuffer buffer = new StringBuffer();
+
+            // Bucle para elegir una cadena de 10 caracteres al azar
+            for (int i=0;i<10;i++){
+
+               // Añadimos al buffer un caracter al azar del array
+               buffer.append(chars[random.nextInt(charsLength)]);
+            }
+            
+            enviarCorreo(usuario.getCorreo(), buffer.toString());
+
+            String passwordHash = generateStorngPasswordHash(buffer.toString());
 
             preparedStatement.setString(2, passwordHash);
-            preparedStatement.setString(3, usuario.getNombre());
-            preparedStatement.setString(4, usuario.getpApellido());
-            preparedStatement.setString(5, usuario.getsApellido());
-            preparedStatement.setString(6, usuario.getTelefono());
-            preparedStatement.setString(7, usuario.getTelefonoEmergencia());
-            preparedStatement.setObject(8, usuario.getCodigoPostal(), Types.INTEGER);
-            preparedStatement.setString(9, usuario.getLocalidad());
-            preparedStatement.setString(10, usuario.getProvincia());
+            
+            Calendar fecha = new GregorianCalendar();
+            String fechaActual = fecha.get(Calendar.YEAR) + "-" + fecha.get(Calendar.MONTH) + "-" + fecha.get(Calendar.DATE);
+            preparedStatement.setString(3, fechaActual);
 
             resultado = preparedStatement.executeUpdate();
 
@@ -585,5 +614,50 @@ public class NordBoxCAD
             bytes[i] = (byte) Integer.parseInt(hex.substring(2 * i, 2 * i + 2), 16);
         }
         return bytes;
+    }
+
+    private void enviarCorreo(String correo, String password)
+    {
+        String asunto="Bienvenido a NordBox Fitness Santoña";
+        String cuerpo="Datos de acceso\n" +
+            "Usuario: " + correo + "\n" +
+            "\n" +
+            "Contraseña: " + password;
+        
+        System.out.println("Estableciendo las propiedades ...");
+        Properties propiedades = new Properties();
+        propiedades.put("mail.smtp.starttls.enable", "true");
+        propiedades.put("mail.smtp.auth", "true");
+        propiedades.put("mail.smtp.host", "smtp.gmail.com");
+        propiedades.put("mail.smtp.port", "587");
+
+        System.out.println("Configurando el autenticador ...");
+        Authenticator autenticador = new Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication("NordBoxApp@gmail.com", "Abc123.kk");
+            }
+        };
+
+        System.out.println("Estableciendo una conexión con el servidor SMTP ...");
+        Session sesion = Session.getInstance(propiedades, autenticador);
+
+        try {
+            System.out.println("Creando el mensaje ...");
+            Message mensaje = new MimeMessage(sesion);
+            InternetAddress iaDe = new InternetAddress("NordBoxApp@gmail.com");
+            mensaje.setFrom(iaDe);
+            InternetAddress[] iaA = InternetAddress.parse(correo);
+            mensaje.setRecipients(Message.RecipientType.TO, iaA);
+            mensaje.setSubject(asunto);
+            mensaje.setText(cuerpo);
+
+            System.out.println("Enviando el mensaje ...");
+            Transport.send(mensaje);
+            System.out.println("Correo electrónico enviado");
+
+        } catch (MessagingException e) {
+            System.out.println("Fallo en el envío del correo electrónico. Fallo que se ha producido: " + e.getMessage());
+        }
     }
 }
