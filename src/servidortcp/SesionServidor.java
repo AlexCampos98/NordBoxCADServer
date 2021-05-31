@@ -26,6 +26,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import nordboxcad.EjercicioBenchUsuario;
 import nordboxcad.EjerciciosBench;
+import nordboxcad.Evento;
 import nordboxcad.ExcepcionNordBox;
 import nordboxcad.NordBoxCAD;
 import nordboxcad.Usuario;
@@ -54,6 +55,7 @@ public class SesionServidor extends Thread
         {
             NordBoxCAD boxCAD = new NordBoxCAD();
             Usuario usuario, recepcionUsuario;
+            Evento recepcionEvento, envioEvento, evento;
             EjercicioBenchUsuario recepcionEjercicioBenchUsuario;
             EjerciciosBench recepcionEjerciciosBench;
             int varInt;
@@ -151,6 +153,15 @@ public class SesionServidor extends Thread
                     recepcionUsuario = (Usuario) recepcionObject.readObject();
                     usuario = boxCAD.buscarUsuarioID(recepcionUsuario.getId());
                     envioObject.writeObject(usuario);
+                    
+                    break;
+                    
+                case "crearEvento":
+                    recepcionObject = new ObjectInputStream(clienteConectado.getInputStream());
+
+                    System.out.println(date.toString() + " - crearEvento");
+                    recepcionEvento = (Evento) recepcionObject.readObject();
+                    boxCAD.crearEvento(recepcionEvento);
                     
                     break;
             }

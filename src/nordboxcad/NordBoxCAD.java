@@ -553,6 +553,31 @@ public class NordBoxCAD
         return arrayList;
     }
 
+    public void crearEvento(Evento evento) throws ExcepcionNordBox
+    {
+        conectar();
+        String dml = "INSERT INTO evento (fecha, hora, nombre, n_plazas, color, id_entrenador) VALUES (?,?,?,?,?,?)";
+
+        try
+        {
+            PreparedStatement preparedStatement = conexion.prepareStatement(dml);
+            preparedStatement.setString(1, evento.getFecha());
+            preparedStatement.setString(2, evento.getHora());
+            preparedStatement.setString(3, evento.getNombre());
+            preparedStatement.setObject(4, evento.getnPlazas(), Types.INTEGER);
+            preparedStatement.setString(5, evento.getColor());
+            preparedStatement.setObject(6, evento.getIdEntrenador(), Types.INTEGER);
+
+            preparedStatement.executeUpdate();
+
+            preparedStatement.close();
+            conexion.close();
+        } catch (SQLException ex)
+        {
+            Logger.getLogger(NordBoxCAD.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
     private static String generateStorngPasswordHash(String password) throws NoSuchAlgorithmException, InvalidKeySpecException
     {
         int iterations = 1000;
