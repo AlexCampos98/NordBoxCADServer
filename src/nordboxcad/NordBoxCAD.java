@@ -543,6 +543,7 @@ public class NordBoxCAD
                 ejercicioBenchUsuario.setId_usu(resultSet.getInt("id_usuario"));
                 ejercicioBenchUsuario.setFecha(resultSet.getDate("fecha"));
                 ejercicioBenchUsuario.setPeso(resultSet.getInt("peso"));
+                ejercicioBenchUsuario.setRondas(resultSet.getInt("n_rondas"));
 
                 arrayList.add(ejercicioBenchUsuario);
             }

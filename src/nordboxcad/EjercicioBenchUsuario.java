@@ -16,19 +16,20 @@ public class EjercicioBenchUsuario implements Serializable
 {
     Integer id, id_ejeBench, id_usu;
     Date fecha;
-    Integer peso;
+    Integer peso, rondas;
 
     public EjercicioBenchUsuario()
     {
     }
 
-    public EjercicioBenchUsuario(Integer id, Integer id_ejeBench, Integer id_usu, Date fecha, Integer peso)
+    public EjercicioBenchUsuario(Integer id, Integer id_ejeBench, Integer id_usu, Date fecha, Integer peso, Integer rondas)
     {
         this.id = id;
         this.id_ejeBench = id_ejeBench;
         this.id_usu = id_usu;
         this.fecha = fecha;
         this.peso = peso;
+        this.rondas = rondas;
     }
 
     public Integer getId()
@@ -81,10 +82,19 @@ public class EjercicioBenchUsuario implements Serializable
         this.peso = peso;
     }
 
+    public Integer getRondas()
+    {
+        return rondas;
+    }
+
+    public void setRondas(Integer rondas)
+    {
+        this.rondas = rondas;
+    }
+
     @Override
     public String toString()
     {
-        return "EjercicioBenchUsuario{" + "id=" + id + ", id_ejeBench=" + id_ejeBench + ", id_usu=" + id_usu + ", fecha=" + fecha + ", peso=" + peso + '}';
+        return "EjercicioBenchUsuario{" + "id=" + id + ", id_ejeBench=" + id_ejeBench + ", id_usu=" + id_usu + ", fecha=" + fecha + ", peso=" + peso + ", rondas=" + rondas + '}';
     }
-    
 }
