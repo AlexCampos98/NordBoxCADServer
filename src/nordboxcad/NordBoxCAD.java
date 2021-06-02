@@ -521,7 +521,7 @@ public class NordBoxCAD
         }
     }
 
-    public ArrayList<EjercicioBenchUsuario> ejeBenchUsuario(Integer idUsuario, Integer idEjercicio) throws ExcepcionNordBox
+    public ArrayList<EjercicioBenchUsuario> ejeBenchUsuario(EjercicioBenchUsuario benchUsuario) throws ExcepcionNordBox
     {
         conectar();
         String dql = "SELECT * FROM apunto_ejercicio WHERE id_ejercicio_bench=? AND id_usuario=? ORDER BY fecha DESC";
@@ -530,21 +530,21 @@ public class NordBoxCAD
         try
         {
             PreparedStatement preparedStatement = conexion.prepareStatement(dql);
-            preparedStatement.setObject(1, idEjercicio, Types.INTEGER);
-            preparedStatement.setObject(2, idUsuario, Types.INTEGER);
+            preparedStatement.setObject(1, benchUsuario.getId_ejeBench(), Types.INTEGER);
+            preparedStatement.setObject(2, benchUsuario.getId_usu(), Types.INTEGER);
 
             ResultSet resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next())
             {
-                EjercicioBenchUsuario benchUsuario = new EjercicioBenchUsuario();
-                benchUsuario.setId(resultSet.getInt("id_apunte"));
-                benchUsuario.setId_ejeBench(resultSet.getInt("id_ejercicio_bench"));
-                benchUsuario.setId_usu(resultSet.getInt("id_usuario"));
-                benchUsuario.setFecha(resultSet.getDate("fecha"));
-                benchUsuario.setPeso(resultSet.getInt("peso"));
+                EjercicioBenchUsuario ejercicioBenchUsuario = new EjercicioBenchUsuario();
+                ejercicioBenchUsuario.setId(resultSet.getInt("id_apunte"));
+                ejercicioBenchUsuario.setId_ejeBench(resultSet.getInt("id_ejercicio_bench"));
+                ejercicioBenchUsuario.setId_usu(resultSet.getInt("id_usuario"));
+                ejercicioBenchUsuario.setFecha(resultSet.getDate("fecha"));
+                ejercicioBenchUsuario.setPeso(resultSet.getInt("peso"));
 
-                arrayList.add(benchUsuario);
+                arrayList.add(ejercicioBenchUsuario);
             }
         } catch (SQLException ex)
         {
