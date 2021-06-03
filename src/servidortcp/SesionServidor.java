@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import nordboxcad.ApuntoEjercicio;
 import nordboxcad.EjercicioBenchUsuario;
 import nordboxcad.EjerciciosBench;
 import nordboxcad.Evento;
@@ -171,6 +172,13 @@ public class SesionServidor extends Thread
 
                     System.out.println(date.toString() + " - ejeBenchUsuario");
                     envioObject.writeObject(boxCAD.ejeBenchUsuario((EjercicioBenchUsuario) recepcionObject.readObject()));
+                    break;
+                
+                case "crearEjeBench":
+                    recepcionObject = new ObjectInputStream(clienteConectado.getInputStream());
+                    
+                    System.out.println(date.toString() + " - crearEjeBench");
+                    boxCAD.crearEjeBench((ApuntoEjercicio) recepcionObject.readObject());
                     break;
             }
 

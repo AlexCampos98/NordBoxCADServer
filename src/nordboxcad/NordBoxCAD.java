@@ -494,22 +494,22 @@ public class NordBoxCAD
     /**
      * Creacion de un registro en la tabla ejercicioBenchUsuario
      *
-     * @param idUsuario
-     * @param idEjercicio
-     * @param peso
+     * @param apuntoEjercicio
      * @throws nordboxcad.ExcepcionNordBox
      */
-    public void crearEjeBench(Integer idUsuario, Integer idEjercicio, Integer peso) throws ExcepcionNordBox
+    public void crearEjeBench(ApuntoEjercicio apuntoEjercicio) throws ExcepcionNordBox
     {
         conectar();
-        String dml = "INSERT INTO apunto_ejercicio (id_ejercicio_bench, id_usuario, fecha, peso) VALUES (?,?,SYSDATE(),?)";
+        String dml = "INSERT INTO apunto_ejercicio (id_ejercicio_bench, id_usuario, fecha, peso, n_rondas) VALUES (?,?,?,?,?)";
 
         try
         {
             PreparedStatement preparedStatement = conexion.prepareStatement(dml);
-            preparedStatement.setObject(1, idEjercicio, Types.INTEGER);
-            preparedStatement.setObject(2, idUsuario, Types.INTEGER);
-            preparedStatement.setObject(3, peso, Types.INTEGER);
+            preparedStatement.setObject(1, apuntoEjercicio.getIdEjercicio(), Types.INTEGER);
+            preparedStatement.setObject(2, apuntoEjercicio.getIdUsuario(), Types.INTEGER);
+            preparedStatement.setString(3, apuntoEjercicio.getFecha());
+            preparedStatement.setObject(4, apuntoEjercicio.getPeso(), Types.INTEGER);
+            preparedStatement.setObject(5, apuntoEjercicio.getnRondas(), Types.INTEGER);
 
             preparedStatement.executeUpdate();
 
