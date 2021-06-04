@@ -180,6 +180,14 @@ public class SesionServidor extends Thread
                     System.out.println(date.toString() + " - crearEjeBench");
                     boxCAD.crearEjeBench((ApuntoEjercicio) recepcionObject.readObject());
                     break;
+                    
+                case "obtenerEventosFecha":
+                    recepcionObject = new ObjectInputStream(clienteConectado.getInputStream());
+                    envioObject = new ObjectOutputStream(clienteConectado.getOutputStream());
+
+                    System.out.println(date.toString() + " - obtenerEventosFecha");
+                    envioObject.writeObject(boxCAD.obtenerEventosFecha((Evento) recepcionObject.readObject()));
+                    break;
             }
 
             System.out.println("Finalizacion del socket");

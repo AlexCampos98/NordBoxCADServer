@@ -579,6 +579,39 @@ public class NordBoxCAD
         }
     }
     
+    public ArrayList<Evento> obtenerEventosFecha(Evento fecha) throws ExcepcionNordBox
+    {
+        ArrayList<Evento> eventos = new ArrayList<>();
+        
+        conectar();
+        String dql = "SELECT * FROM evento WHERE fecha = '" + fecha.getFecha() + "'";
+        
+        try
+        {
+            PreparedStatement preparedStatement = conexion.prepareStatement(dql);
+
+            ResultSet resultSet = preparedStatement.executeQuery(dql);
+
+            while (resultSet.next())
+            {
+                Evento evento = new Evento();
+                evento.setIdEvento(resultSet.getInt("id_evento"));
+                evento.setFecha(resultSet.getString("fecha"));
+                evento.setHora(resultSet.getString("hora"));
+                evento.setNombre(resultSet.getString("nombre"));
+                evento.setnPlazas(resultSet.getInt("n_plazas"));
+                evento.setColor(resultSet.getString("color"));
+                evento.setIdEntrenador(resultSet.getInt("id_entrenador"));
+                eventos.add(evento);
+            }
+        } catch (SQLException ex)
+        {
+            Logger.getLogger(NordBoxCAD.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return eventos;
+    }
+    
     private static String generateStorngPasswordHash(String password) throws NoSuchAlgorithmException, InvalidKeySpecException
     {
         int iterations = 1000;
