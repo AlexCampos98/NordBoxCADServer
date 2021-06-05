@@ -18,6 +18,7 @@ public class Evento implements Serializable
     Integer nPlazas;
     String color;
     Integer idEntrenador;
+    ListEventoApuntados apuntados;
 
     public Evento()
     {
@@ -104,9 +105,20 @@ public class Evento implements Serializable
         this.idEntrenador = idEntrenador;
     }
 
+    public ListEventoApuntados getApuntados()
+    {
+        return apuntados;
+    }
+
+    public void setApuntados(ListEventoApuntados apuntados)
+    {
+        this.apuntados = apuntados;
+    }
+
     @Override
     public String toString()
     {
-        return "Evento{" + "idEvento=" + idEvento + ", fecha=" + fecha + ", hora=" + hora + ", nombre=" + nombre + ", nPlazas=" + nPlazas + ", color=" + color + ", idEntrenador=" + idEntrenador + '}';
+        return "Evento{" + "idEvento=" + idEvento + ", fecha=" + fecha + ", hora=" + hora + ", nombre=" + nombre + ", nPlazas=" + nPlazas + ", color=" + color + ", idEntrenador=" + idEntrenador + ", apuntados=" + apuntados.toString() + '}';
     }
+    
 }

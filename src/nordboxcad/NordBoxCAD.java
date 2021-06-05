@@ -116,9 +116,9 @@ public class NordBoxCAD
         {
             PreparedStatement preparedStatement = conexion.prepareStatement(dml);
             preparedStatement.setString(1, usuario.getCorreo());
-            
+
             // Los caracteres de interés en un array de char.
-            char [] chars = "0123456789abcdefghijklmnopqrstuvwxyz".toCharArray();
+            char[] chars = "0123456789abcdefghijklmnopqrstuvwxyz".toCharArray();
 
             // Longitud del array de char.
             int charsLength = chars.length;
@@ -130,18 +130,19 @@ public class NordBoxCAD
             StringBuffer buffer = new StringBuffer();
 
             // Bucle para elegir una cadena de 10 caracteres al azar
-            for (int i=0;i<10;i++){
+            for (int i = 0; i < 10; i++)
+            {
 
-               // Añadimos al buffer un caracter al azar del array
-               buffer.append(chars[random.nextInt(charsLength)]);
+                // Añadimos al buffer un caracter al azar del array
+                buffer.append(chars[random.nextInt(charsLength)]);
             }
-            
+
             enviarCorreo(usuario.getCorreo(), buffer.toString());
 
             String passwordHash = generateStorngPasswordHash(buffer.toString());
 
             preparedStatement.setString(2, passwordHash);
-            
+
             Calendar fecha = new GregorianCalendar();
             String fechaActual = fecha.get(Calendar.YEAR) + "-" + fecha.get(Calendar.MONTH) + "-" + fecha.get(Calendar.DATE);
             preparedStatement.setString(3, fechaActual);
@@ -247,13 +248,13 @@ public class NordBoxCAD
             if (resultSetNuevoUser.next())
             {
                 if (validatePassword(password, resultSetNuevoUser.getString("password")))
-                    {
-                        usuario.setCorreo(resultSetNuevoUser.getString("correo"));
-                        usuario.setId(0);
-                    } else
-                    {
-                        System.out.println("Contraseña o correo incorrecto");
-                    }
+                {
+                    usuario.setCorreo(resultSetNuevoUser.getString("correo"));
+                    usuario.setId(0);
+                } else
+                {
+                    System.out.println("Contraseña o correo incorrecto");
+                }
             } else
             {
                 ResultSet resultSet = preparedStatement.executeQuery();
@@ -578,14 +579,14 @@ public class NordBoxCAD
             Logger.getLogger(NordBoxCAD.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     public ArrayList<Evento> obtenerEventosFecha(Evento fecha) throws ExcepcionNordBox
     {
         ArrayList<Evento> eventos = new ArrayList<>();
-        
+
         conectar();
         String dql = "SELECT * FROM evento WHERE fecha = '" + fecha.getFecha() + "'";
-        
+
         try
         {
             PreparedStatement preparedStatement = conexion.prepareStatement(dql);
@@ -602,16 +603,80 @@ public class NordBoxCAD
                 evento.setnPlazas(resultSet.getInt("n_plazas"));
                 evento.setColor(resultSet.getString("color"));
                 evento.setIdEntrenador(resultSet.getInt("id_entrenador"));
+                evento.setApuntados(obtenerParticipantesEvento(evento));
                 eventos.add(evento);
             }
         } catch (SQLException ex)
         {
             Logger.getLogger(NordBoxCAD.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         return eventos;
     }
-    
+
+    public ListEventoApuntados obtenerParticipantesEvento(Evento evento) throws ExcepcionNordBox
+    {
+        ListEventoApuntados apuntados = new ListEventoApuntados();
+
+        conectar();
+        String dql = "SELECT * FROM usuario_evento WHERE id_evento=" + evento.getIdEvento() + "";
+
+        try
+        {
+            PreparedStatement preparedStatement = conexion.prepareStatement(dql);
+
+            ResultSet resultSet = preparedStatement.executeQuery(dql);
+
+            apuntados.setIdEntrendaor(evento.getIdEntrenador());
+            apuntados.setIdEvento(evento.getIdEvento());
+
+            int i = 1;
+
+            while (resultSet.next())
+            {
+                switch (i)
+                {
+                    case 1:
+                        apuntados.setDeportista1(resultSet.getInt("id_usuario"));
+                        break;
+                    case 2:
+                        apuntados.setDeportista2(resultSet.getInt("id_usuario"));
+                        break;
+
+                    case 3:
+                        apuntados.setDeportista3(resultSet.getInt("id_usuario"));
+                        break;
+
+                    case 4:
+                        apuntados.setDeportista4(resultSet.getInt("id_usuario"));
+                        break;
+
+                    case 5:
+                        apuntados.setDeportista5(resultSet.getInt("id_usuario"));
+                        break;
+
+                    case 6:
+                        apuntados.setDeportista6(resultSet.getInt("id_usuario"));
+                        break;
+
+                    case 7:
+                        apuntados.setDeportista7(resultSet.getInt("id_usuario"));
+                        break;
+
+                    case 8:
+                        apuntados.setDeportista8(resultSet.getInt("id_usuario"));
+                        break;
+                }
+                i++;
+            }
+        } catch (SQLException ex)
+        {
+            Logger.getLogger(NordBoxCAD.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return apuntados;
+    }
+
     private static String generateStorngPasswordHash(String password) throws NoSuchAlgorithmException, InvalidKeySpecException
     {
         int iterations = 1000;
@@ -677,12 +742,12 @@ public class NordBoxCAD
 
     private void enviarCorreo(String correo, String password)
     {
-        String asunto="Bienvenido a NordBox Fitness Santoña";
-        String cuerpo="Datos de acceso\n" +
-            "Usuario: " + correo + "\n" +
-            "\n" +
-            "Contraseña: " + password;
-        
+        String asunto = "Bienvenido a NordBox Fitness Santoña";
+        String cuerpo = "Datos de acceso\n"
+                + "Usuario: " + correo + "\n"
+                + "\n"
+                + "Contraseña: " + password;
+
         System.out.println("Estableciendo las propiedades ...");
         Properties propiedades = new Properties();
         propiedades.put("mail.smtp.starttls.enable", "true");
@@ -691,9 +756,11 @@ public class NordBoxCAD
         propiedades.put("mail.smtp.port", "587");
 
         System.out.println("Configurando el autenticador ...");
-        Authenticator autenticador = new Authenticator() {
+        Authenticator autenticador = new Authenticator()
+        {
             @Override
-            protected PasswordAuthentication getPasswordAuthentication() {
+            protected PasswordAuthentication getPasswordAuthentication()
+            {
                 return new PasswordAuthentication("NordBoxApp@gmail.com", "Abc123.kk");
             }
         };
@@ -701,7 +768,8 @@ public class NordBoxCAD
         System.out.println("Estableciendo una conexión con el servidor SMTP ...");
         Session sesion = Session.getInstance(propiedades, autenticador);
 
-        try {
+        try
+        {
             System.out.println("Creando el mensaje ...");
             Message mensaje = new MimeMessage(sesion);
             InternetAddress iaDe = new InternetAddress("NordBoxApp@gmail.com");
@@ -715,7 +783,8 @@ public class NordBoxCAD
             Transport.send(mensaje);
             System.out.println("Correo electrónico enviado");
 
-        } catch (MessagingException e) {
+        } catch (MessagingException e)
+        {
             System.out.println("Fallo en el envío del correo electrónico. Fallo que se ha producido: " + e.getMessage());
         }
     }
