@@ -676,6 +676,50 @@ public class NordBoxCAD
 
         return apuntados;
     }
+    
+    public void apuntarseEvento(Integer idUsuario, Integer idEvento) throws ExcepcionNordBox
+    {
+        conectar();
+        String dml = "INSERT INTO usuario_evento (id_usuario, id_evento) VALUES (?,?)";
+
+        try
+        {
+            PreparedStatement preparedStatement = conexion.prepareStatement(dml);
+            preparedStatement.setObject(1, idUsuario, Types.INTEGER);
+            preparedStatement.setObject(2, idEvento, Types.INTEGER);
+
+
+            preparedStatement.executeUpdate();
+
+            preparedStatement.close();
+            conexion.close();
+        } catch (SQLException ex)
+        {
+            Logger.getLogger(NordBoxCAD.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public void desapuntarseEvento(Integer idUsuario, Integer idEvento) throws ExcepcionNordBox
+    {
+        conectar();
+        String dml = "DELETE FROM usuario_evento WHERE id_usuario=? AND id_evento=?";
+
+        try
+        {
+            PreparedStatement preparedStatement = conexion.prepareStatement(dml);
+            preparedStatement.setObject(1, idUsuario, Types.INTEGER);
+            preparedStatement.setObject(2, idEvento, Types.INTEGER);
+
+
+            preparedStatement.executeUpdate();
+
+            preparedStatement.close();
+            conexion.close();
+        } catch (SQLException ex)
+        {
+            Logger.getLogger(NordBoxCAD.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 
     private static String generateStorngPasswordHash(String password) throws NoSuchAlgorithmException, InvalidKeySpecException
     {

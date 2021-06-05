@@ -188,6 +188,26 @@ public class SesionServidor extends Thread
                     System.out.println(date.toString() + " - obtenerEventosFecha");
                     envioObject.writeObject(boxCAD.obtenerEventosFecha((Evento) recepcionObject.readObject()));
                     break;
+                    
+                case "apuntarseEvento":
+                    recepcionData = new DataInputStream(clienteConectado.getInputStream());
+                    Integer idUsuario = recepcionData.readInt();
+                    recepcionData = new DataInputStream(clienteConectado.getInputStream());
+                    Integer idEvento = recepcionData.readInt(); 
+                    
+                    System.out.println(date.toString() + " - apuntarseEvento");
+                    boxCAD.apuntarseEvento(idUsuario, idEvento);
+                    break;
+                    
+                case "desapuntarseEvento":
+                    recepcionData = new DataInputStream(clienteConectado.getInputStream());
+                    Integer idUsuario1 = recepcionData.readInt();
+                    recepcionData = new DataInputStream(clienteConectado.getInputStream());
+                    Integer idEvento1 = recepcionData.readInt(); 
+                    
+                    System.out.println(date.toString() + " - desapuntarseEvento");
+                    boxCAD.desapuntarseEvento(idUsuario1, idEvento1);
+                    break;
             }
 
             System.out.println("Finalizacion del socket");
